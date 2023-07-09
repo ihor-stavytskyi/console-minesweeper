@@ -1,0 +1,1 @@
+public record Point(int Row, int Column);
