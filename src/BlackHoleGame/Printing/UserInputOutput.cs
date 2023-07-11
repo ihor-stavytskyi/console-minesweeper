@@ -76,34 +76,46 @@ public class UserInputOutput
         return holesCount;
     }
 
-    public static Point ReadPointFromConsole(IGame game)
+    public static (UserCommand Command, Point Point) ReadPointFromConsole(IGame game)
     {
-        Point point;
+        (UserCommand, Point) result;
         while (true)
         {
             Console.WriteLine("Enter the location of the cell you want to click on. Coordinates should be separated by a space:");
-            var input = Console.ReadLine()!;
-            if (input == "r") // "r" for "reveal"
+            var rawInput = Console.ReadLine()!;
+            if (rawInput == "r") // "r" for "reveal"
             {
-                point = RevealBoardCommand;
+                result = (UserCommand.RevealBoard, RevealBoardCommand);
                 break;
             }
-            var numbers = input.Trim().Split(' ');
-            if (numbers.Length == 2 && TryParseNumber(numbers[0], out var row) && TryParseNumber(numbers[1], out var column))
+            var values = rawInput.Trim().Split(' ');
+            if ((values.Length == 2 || values.Length == 3) && TryParseNumber(values[0], out var row) && TryParseNumber(values[1], out var column))
             {
-                point = new Point(row, column);
+                var point = new Point(row, column);
                 if (!game.IsInsideBoard(point))
                 {
                     PrintError("The point must be inside the board.");
                 }
                 else
                 {
-                    break;
+                    if (values.Length == 2)
+                    {
+                        result = (UserCommand.Click, point);
+                        break;
+                    }
+                    else // values.Length == 3
+                    {
+                        if (values[2] == "f")
+                        {
+                            result = (UserCommand.Flag, point);
+                            break;
+                        }
+                    }
                 }
             }
         }
 
-        return point;
+        return result;
     }
 
     public void PrintResult(GameState state)

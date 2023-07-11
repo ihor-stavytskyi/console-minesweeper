@@ -105,7 +105,13 @@ public class BoardPrinter
     private ConsoleColor GetCellColor(IReadOnlyCell cell, bool forceOpen)
     {
         return cell.IsOpen || forceOpen
-            ? cell.IsHole ? _options.HoleColor : _options.OpenCellColor 
-            : _options.DefaultColor;
+            ? cell.IsOpenAndClickable
+                ? _options.OpenClickableCellColor
+                : cell.IsHole 
+                    ? _options.HoleColor 
+                    : _options.OpenCellColor 
+            : cell.IsFlagged
+                ? _options.FlaggedCellColor
+                : _options.DefaultColor;
     }
 }

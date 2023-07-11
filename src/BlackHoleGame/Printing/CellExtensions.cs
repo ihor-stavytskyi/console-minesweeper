@@ -13,6 +13,8 @@ public static class CellExtensions
     {
         return cell.IsOpen 
             ? RevealCell(cell) 
-            : "C"; // "C" for "Closed"
+            : cell.IsFlagged 
+                ? "F" // "F" for "Flagged"
+                : "C"; // "C" for "Closed"
     }
 }

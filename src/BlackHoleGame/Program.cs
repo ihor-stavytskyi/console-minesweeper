@@ -12,18 +12,23 @@ var gameState = GameState.GameContinues;
 
 do
 {
-    var pointToClick = UserInputOutput.ReadPointFromConsole(game);
-    if (pointToClick == UserInputOutput.RevealBoardCommand) // that is a trick that reveals the board for testing purposes
+    var (command, pointToClick) = UserInputOutput.ReadPointFromConsole(game);
+    switch (command)
     {
-        printer.RevealBoard();
+        case UserCommand.RevealBoard: // this is a trick that reveals the board for testing purposes
+            printer.RevealBoard();
+            break;
+        case UserCommand.Click:
+            gameState = game.Click(pointToClick);
+            break;
+        case UserCommand.Flag:
+            game.Flag(pointToClick);
+            break;
     }
-    else
+
+    if (gameState == GameState.GameContinues)
     {
-        gameState = game.Click(pointToClick);
-        if (gameState == GameState.GameContinues)
-        {
-            printer.PrintBoardForGamer();
-        }
+        printer.PrintBoardForGamer();
     }
 } while (gameState == GameState.GameContinues);
 

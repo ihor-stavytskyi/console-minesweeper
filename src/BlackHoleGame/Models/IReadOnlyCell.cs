@@ -3,5 +3,7 @@ public interface IReadOnlyCell
 {
     bool IsOpen { get; }
     bool IsHole { get; }
+    public bool IsFlagged { get; }
     int AdjacentHolesCount { get; }
+    public bool IsOpenAndClickable { get; }
 }
