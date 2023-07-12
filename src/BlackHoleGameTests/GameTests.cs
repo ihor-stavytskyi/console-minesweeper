@@ -9,7 +9,8 @@ public class GameTests
     public void CellsSurroundingHoleShouldHaveAdjacentHolesCountEqualToOne()
     {
         var hole = new Point(2, 2);
-        var game = new Game(5, new [] { hole });
+        var gameBoard = new GameBoard(5, new [] { hole });
+        var game = new Game(gameBoard);
         var adjacentPoints = new []
         {
             new Point(2, 1),
@@ -22,12 +23,12 @@ public class GameTests
             new Point(3, 1),
         };
         
-        for (int i = 0; i < game.BoardSize; i++)
+        for (int i = 0; i < gameBoard.BoardSize; i++)
         {
-            for (int j = 0; j < game.BoardSize; j++)
+            for (int j = 0; j < gameBoard.BoardSize; j++)
             {
                 var point = new Point(i, j);
-                var cell = game.GetReadOnlyCell(point);
+                var cell = gameBoard.GetReadOnlyCell(point);
                 var expectedAdjacentHolesCount = adjacentPoints.Contains(point) ? 1 : 0;
                 cell.AdjacentHolesCount.Should().Be(expectedAdjacentHolesCount);
 
@@ -42,17 +43,18 @@ public class GameTests
     public void ClickOnZeroAdjacentHolesCellShouldOpenSurroundingCells()
     {
         var hole = new Point(2, 2);
-        var game = new Game(5, new [] { hole });
+        var gameBoard = new GameBoard(5, new [] { hole });
+        var game = new Game(gameBoard);
 
         var gameState = game.Click(0, 0);
         gameState.Should().Be(GameState.UserWon); // the user wins the game because all cells become open after the click
 
-        for (int i = 0; i < game.BoardSize; i++)
+        for (int i = 0; i < gameBoard.BoardSize; i++)
         {
-            for (int j = 0; j < game.BoardSize; j++)
+            for (int j = 0; j < gameBoard.BoardSize; j++)
             {
                 var point = new Point(i, j);
-                var cell = game.GetReadOnlyCell(point);
+                var cell = gameBoard.GetReadOnlyCell(point);
                 var expectedIsOpen = point != hole; // every cell except the hole should become open
                 cell.IsOpen.Should().Be(expectedIsOpen);
             }
@@ -64,17 +66,18 @@ public class GameTests
     public void ClickOnMoreThanZeroAdjacentHolesCellShouldOpenJustClickedCell()
     {
         var hole = new Point(2, 2);
-        var game = new Game(5, new [] { hole });
+        var gameBoard = new GameBoard(5, new [] { hole });
+        var game = new Game(gameBoard);
         var clickedPoint = new Point(1, 1);
         var gameState = game.Click(clickedPoint);
         gameState.Should().Be(GameState.GameContinues); // because not all cells are open
 
-        for (int i = 0; i < game.BoardSize; i++)
+        for (int i = 0; i < gameBoard.BoardSize; i++)
         {
-            for (int j = 0; j < game.BoardSize; j++)
+            for (int j = 0; j < gameBoard.BoardSize; j++)
             {
                 var point = new Point(i, j);
-                var cell = game.GetReadOnlyCell(point);
+                var cell = gameBoard.GetReadOnlyCell(point);
                 var expectedIsOpen = point == clickedPoint;
                 cell.IsOpen.Should().Be(expectedIsOpen);
             }
@@ -98,17 +101,18 @@ public class GameTests
             new Point(2, 2),
             new Point(2, 3),
         };
-        var game = new Game(5, holes);
+        var gameBoard = new GameBoard(5, holes);
+        var game = new Game(gameBoard);
 
         // this cell should be free
-        var cellBeforeFirstClick = game.GetReadOnlyCell(new Point(1, 0));
+        var cellBeforeFirstClick = gameBoard.GetReadOnlyCell(new Point(1, 0));
         cellBeforeFirstClick.IsHole.Should().BeFalse(); // cell is not a hole
 
         var gameStateAfterFirstClick = game.Click(2, 2); // hit the hole on a first click
         gameStateAfterFirstClick.Should().Be(GameState.GameContinues);
 
         // the hole should be moved to the first empty cell starting from the top left corner
-        var cellAfterFirstClick = game.GetReadOnlyCell(new Point(1, 0));
+        var cellAfterFirstClick = gameBoard.GetReadOnlyCell(new Point(1, 0));
         cellAfterFirstClick.IsHole.Should().BeTrue(); // now this cell is a hole
 
         var gameStateAfterSecondClick = game.Click(0, 1);
@@ -120,7 +124,8 @@ public class GameTests
     public void ClickOnHoleShouldLoseTheGame()
     {
         var hole = new Point(2, 2);
-        var game = new Game(5, new [] { hole });
+        var gameBoard = new GameBoard(5, new [] { hole });
+        var game = new Game(gameBoard);
         var gameStateAfterFirstClick = game.Click(1, 1); // we do not hit a hole on the first click, because it impossible to lose on the first click
         gameStateAfterFirstClick.Should().Be(GameState.GameContinues);
 
@@ -133,7 +138,8 @@ public class GameTests
     public void ClickOutsideTheBoardShouldNotBreakTheGame()
     {
         var hole = new Point(2, 2);
-        var game = new Game(5, new [] { hole });
+        var gameBoard = new GameBoard(5, new [] { hole });
+        var game = new Game(gameBoard);
 
         var gameState = game.Click(8, 8); // click outside the board
         gameState.Should().Be(GameState.GameContinues);
@@ -147,17 +153,18 @@ public class GameTests
     public void EnormousBoardShouldNotCrashTheGame()
     {
         var hole = new Point(400, 400);
-        var game = new Game(1000, new [] { hole });
+        var gameBoard = new GameBoard(1000, new [] { hole });
+        var game = new Game(gameBoard);
 
         var gameState = game.Click(500, 500);
         gameState.Should().Be(GameState.UserWon); // user wins on the first click
 
-        for (int i = 0; i < game.BoardSize; i++)
+        for (int i = 0; i < gameBoard.BoardSize; i++)
         {
-            for (int j = 0; j < game.BoardSize; j++)
+            for (int j = 0; j < gameBoard.BoardSize; j++)
             {
                 var point = new Point(i, j);
-                var cell = game.GetReadOnlyCell(point);
+                var cell = gameBoard.GetReadOnlyCell(point);
                 var expectedIsOpen = point != hole; // every cell except the hole should become open
                 cell.IsOpen.Should().Be(expectedIsOpen);
             }

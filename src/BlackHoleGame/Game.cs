@@ -1,65 +1,11 @@
 // The class that contains the main logic of the game
-public class Game : IGame
+public class Game
 {
-    /* 
-    The board is represented as a 2D-array because this data structure is most similar to the real game board, 
-    so it is intuitive for a human to imagine a board as a 2D-array. 
-    Each element of this array contains an instance of a Cell class that represents the state of a single cell -  
-    whether it is a hole or not, whether it was opened by the user or not, how many adjacent holes it has and so on.
-    */
-    private readonly Cell[,] _board;
-    
-    private readonly int _holesCount;
+    private readonly IMutableGameBoard _board;
 
-    // Represents shifts to get the neighbors. If you add these points to any point, you will get all its neighbors
-    private readonly Point[] _shifts = new Point[] 
+    public Game(IMutableGameBoard board)
     {
-        new Point(0, -1),   // ←
-        new Point(-1, -1),  // ↖ 
-        new Point(-1, 0),   // ↑
-        new Point(-1, 1),   // ↗
-        new Point(0, 1),    // →
-        new Point(1, 1),    // ↘
-        new Point(1, 0),    // ↓
-        new Point(1, -1),   // ↙
-    };
-
-    public Game(int boardSize, Point[] holeLocations)
-    {
-        // initialize the board
-        _holesCount = holeLocations.Length;
-        BoardSize = boardSize;
-        _board = new Cell[boardSize, boardSize];
-        for (int i = 0; i < boardSize; i++)
-        {
-            for (int j = 0; j < boardSize; j++)
-            {
-                _board[i, j] = new Cell();
-            }
-        }
-
-        // mark holes on the board
-        foreach (var hole in holeLocations)
-        {
-            var cell = GetCell(hole);
-            cell.IsHole = true;
-        }
-
-        CalculateAdjacentHolesCountForAllCells();
-    }
-
-    public int BoardSize { get; }
-
-    public int OpenCellsCount { get; private set; }
-
-    public bool IsInsideBoard(Point point)
-    {
-        return point.Row >= 0 && point.Row < BoardSize && point.Column >=0 && point.Column < BoardSize;
-    }
-
-    public IReadOnlyCell GetReadOnlyCell(Point point)
-    {
-        return GetCell(point);
+        _board = board;
     }
     
     public GameState Click(int row, int column)
@@ -69,12 +15,12 @@ public class Game : IGame
 
     public GameState Click(Point clickedPoint)
     {
-        if (!IsInsideBoard(clickedPoint))
+        if (!_board.IsInsideBoard(clickedPoint))
         {
             return GameState.GameContinues;
         }
 
-        var clickedCell = GetCell(clickedPoint);
+        var clickedCell = _board.GetCell(clickedPoint);
 
         if (clickedCell.IsFlagged)
         {
@@ -98,12 +44,12 @@ public class Game : IGame
 
     public void Flag(Point clickedPoint)
     {
-        if (!IsInsideBoard(clickedPoint))
+        if (!_board.IsInsideBoard(clickedPoint))
         {
             return;
         }
 
-        var clickedCell = GetCell(clickedPoint);
+        var clickedCell = _board.GetCell(clickedPoint);
         if (clickedCell.IsOpen)
         {
             return;
@@ -113,10 +59,10 @@ public class Game : IGame
         
         // change adjacent flags count and IsBlue property for neighbors
         var flagsToAdd = clickedCell.IsFlagged ? 1 : -1;
-        var neighbors = GetNeighbors(clickedPoint);
+        var neighbors = _board.GetNeighbors(clickedPoint);
         foreach (var neighborPoint in neighbors)
         {
-            var neighbor = GetCell(neighborPoint);
+            var neighbor = _board.GetCell(neighborPoint);
             neighbor.AdjacentFlagsCount += flagsToAdd; 
         }
 
@@ -145,10 +91,10 @@ public class Game : IGame
 
     private GameState HandleClickIntoOpenAndClickableCell(Point clickedPoint)
     {
-        var neighbors = GetNeighbors(clickedPoint);
+        var neighbors = _board.GetNeighbors(clickedPoint);
         foreach (var neighborPoint in neighbors)
         {
-            var neighbor = GetCell(neighborPoint);
+            var neighbor = _board.GetCell(neighborPoint);
             if (!neighbor.IsOpen)
             {
                 if (!neighbor.IsFlagged)
@@ -167,16 +113,16 @@ public class Game : IGame
 
     private GameState HandleClickIntoHole(Point clickedPoint)
     {
-        var clickedCell = GetCell(clickedPoint);
-        if (OpenCellsCount == 0) // the user can not hit a hole on the first click, so move the hole to a free cell
+        var clickedCell = _board.GetCell(clickedPoint);
+        if (_board.OpenCellsCount == 0) // the user can not hit a hole on the first click, so move the hole to a free cell
         {
-            MoveHoleToTheFirstFreeCell(clickedCell);
+            _board.MoveHoleToTheFirstFreeCell(clickedCell);
             MarkCellsAsOpen(clickedPoint);
             return GameState.GameContinues;
         }
         else
         {
-            OpenCell(clickedCell);
+            _board.OpenCell(clickedCell);
             return GameState.UserLost;
         }
     }
@@ -198,14 +144,14 @@ public class Game : IGame
         while (queue.Any())
         {
             var currentPoint = queue.Dequeue();
-            var cellToOpen = GetCell(currentPoint);
+            var cellToOpen = _board.GetCell(currentPoint);
 
             if (!cellToOpen.IsOpen)
             {
-                OpenCell(cellToOpen);
+                _board.OpenCell(cellToOpen);
                 if (cellToOpen.AdjacentHolesCount == 0) // if a cell has zero adjacent holes, then its surrounding cells should be open as well
                 {
-                    var neighbors = GetNeighbors(currentPoint);
+                    var neighbors = _board.GetNeighbors(currentPoint);
                     foreach (var neighbor in neighbors)
                     {
                         queue.Enqueue(neighbor); // add every neighbor to the queue
@@ -215,80 +161,9 @@ public class Game : IGame
         }
     }
 
-    /* 
-    In the original Minesweeper game, you can't hit a mine on the first click. The same behavior is implemented here.
-    The method moves the hole to the first free cell starting from the top left corner. 
-    If the cell is not free, then it moves to the right. If the whole row is occupied, it moves one row down and so on.
-    Note that after that we need to recalculate the number of adjacent holes.
-    */
-    private void MoveHoleToTheFirstFreeCell(Cell clickedCell)
-    {
-        for (int i = 0; i < BoardSize; i++)
-        {
-            for (int j = 0; j < BoardSize; j++)
-            {
-                var cell = GetCell(i, j);
-                if (!cell.IsHole)
-                {
-                    cell.IsHole = true;
-                    clickedCell.IsHole = false;
-                    CalculateAdjacentHolesCountForAllCells();
-                    return;
-                }
-            }
-        }
-    } 
-
-    private void CalculateAdjacentHolesCountForAllCells()
-    {
-        for (int i = 0; i < BoardSize; i++)
-        {
-            for (int j = 0; j < BoardSize; j++)
-            {
-                var point = new Point(i, j);
-                var cell = GetCell(point);
-                if (!cell.IsHole) // for holes we do not need to calculate the number of adjacent holes
-                {
-                    cell.AdjacentHolesCount = CalculateAdjacentHolesCount(point);
-                }
-            }
-        }
-    }
-
-    // The idea is to get all neighbors and count the number of holes among the neighbors
-    private int CalculateAdjacentHolesCount(Point point)
-    {
-        var neighbors = GetNeighbors(point);
-        return neighbors.Where(x => GetCell(x).IsHole).Count();
-    }
-
-    // The method takes all eight possible neighbor points and filters out the points that are outside the board (because the edge cells have less than eight neighbors)
-    private IEnumerable<Point> GetNeighbors(Point point)
-    {
-        return _shifts
-            .Select(shift => new Point(point.Row + shift.Row, point.Column + shift.Column))
-            .Where(neighborPoint => IsInsideBoard(neighborPoint));
-    }
-
     // The user wins the game when all cells except holes are open
     private bool HasUserWon()
     {
-        return OpenCellsCount == (BoardSize * BoardSize - _holesCount);
-    }
-
-    private Cell GetCell(Point point)
-    {
-        return GetCell(point.Row, point.Column);
-    }
-
-    private Cell GetCell(int row, int column)
-    {
-        return _board[row, column];
-    }
-
-    private void OpenCell(Cell cell)
-    {
-        cell.IsOpen = true;
-        OpenCellsCount++;
+        return _board.OpenCellsCount == (_board.BoardSize * _board.BoardSize - _board.HolesCount);
     }
 }

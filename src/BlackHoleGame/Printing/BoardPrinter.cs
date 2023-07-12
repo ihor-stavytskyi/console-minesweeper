@@ -1,12 +1,12 @@
 public class BoardPrinter
 {
     private readonly PrinterOptions _options;
-    private readonly IGame _game;
+    private readonly IReadOnlyGameBoard _gameBoard;
 
-    public BoardPrinter(PrinterOptions options, IGame game)
+    public BoardPrinter(PrinterOptions options, IReadOnlyGameBoard gameBoard)
     {
         _options = options;
-        _game = game;
+        _gameBoard = gameBoard;
     }
 
     public void RevealBoard()
@@ -24,13 +24,13 @@ public class BoardPrinter
         PrintOpenedCellsCount();
         PrintHeaderRow();
 
-        for (int i = 0; i < _game.BoardSize; i++)
+        for (int i = 0; i < _gameBoard.BoardSize; i++)
         {
             PrintIndexCell(i);
 
-            for (int j = 0; j < _game.BoardSize; j++)
+            for (int j = 0; j < _gameBoard.BoardSize; j++)
             {
-                var cell = _game.GetReadOnlyCell(new Point(i, j));
+                var cell = _gameBoard.GetReadOnlyCell(new Point(i, j));
                 var cellColor = GetCellColor(cell, forceOpen);
                 var cellContent = cellToString(cell);
                 PrintCell(cellContent, cellColor);
@@ -45,9 +45,9 @@ public class BoardPrinter
     private void PrintOpenedCellsCount()
     {
         Console.Write("You have opened ");
-        PrintWithColor(_game.OpenCellsCount.ToString(), ConsoleColor.Green);
+        PrintWithColor(_gameBoard.OpenCellsCount.ToString(), ConsoleColor.Green);
         Console.Write(" cells out of ");
-        PrintWithColor((_game.BoardSize * _game.BoardSize).ToString(), ConsoleColor.Green);
+        PrintWithColor((_gameBoard.BoardSize * _gameBoard.BoardSize).ToString(), ConsoleColor.Green);
         Console.WriteLine();
     }
 
@@ -55,7 +55,7 @@ public class BoardPrinter
     {
         PrintCell(" ");
 
-        for (int i = 0; i < _game.BoardSize; i++)
+        for (int i = 0; i < _gameBoard.BoardSize; i++)
         {
             PrintIndexCell(i);
         }
@@ -68,7 +68,7 @@ public class BoardPrinter
     {
         // tricky logic to calculate how many times we should repeat the '-' symbol to cover the full row
         var cellWidth = _options.CellWidth + 1;
-        var rowWidth = cellWidth * _game.BoardSize + cellWidth + 1;
+        var rowWidth = cellWidth * _gameBoard.BoardSize + cellWidth + 1;
         Console.WriteLine(new string('-', rowWidth));
     }
 

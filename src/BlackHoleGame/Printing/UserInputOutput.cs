@@ -76,7 +76,7 @@ public class UserInputOutput
         return holesCount;
     }
 
-    public static (UserCommand Command, Point Point) ReadPointFromConsole(IGame game)
+    public static (UserCommand Command, Point Point) ReadPointFromConsole(IReadOnlyGameBoard gameBoard)
     {
         (UserCommand, Point) result;
         while (true)
@@ -92,7 +92,7 @@ public class UserInputOutput
             if ((values.Length == 2 || values.Length == 3) && TryParseNumber(values[0], out var row) && TryParseNumber(values[1], out var column))
             {
                 var point = new Point(row, column);
-                if (!game.IsInsideBoard(point))
+                if (!gameBoard.IsInsideBoard(point))
                 {
                     PrintError("The point must be inside the board.");
                 }
