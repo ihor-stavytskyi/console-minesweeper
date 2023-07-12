@@ -5,25 +5,31 @@ var holesCount = userInputOutput.ReadHolesCountFromConsole(boardSize);
 
 var randomNumbers = RandomNumberGenerator.Sample(boardSize * boardSize, holesCount);
 var holeLocations = NumberToPointConverter.Convert(randomNumbers, boardSize);
-var game = new Game(boardSize, holeLocations);
-var printer = new BoardPrinter(new PrinterOptions(), game);
+var gameBoard = new GameBoard(boardSize, holeLocations);
+var game = new Game(gameBoard);
+var printer = new BoardPrinter(new PrinterOptions(), gameBoard);
 printer.PrintBoardForGamer();
 var gameState = GameState.GameContinues;
 
 do
 {
-    var pointToClick = UserInputOutput.ReadPointFromConsole(game);
-    if (pointToClick == UserInputOutput.RevealBoardCommand) // that is a trick that reveals the board for testing purposes
+    var (command, pointToClick) = UserInputOutput.ReadPointFromConsole(gameBoard);
+    switch (command)
     {
-        printer.RevealBoard();
+        case UserCommand.RevealBoard: // this is a trick that reveals the board for testing purposes
+            printer.RevealBoard();
+            break;
+        case UserCommand.Click:
+            gameState = game.Click(pointToClick);
+            break;
+        case UserCommand.Flag:
+            game.Flag(pointToClick);
+            break;
     }
-    else
+
+    if (gameState == GameState.GameContinues)
     {
-        gameState = game.Click(pointToClick);
-        if (gameState == GameState.GameContinues)
-        {
-            printer.PrintBoardForGamer();
-        }
+        printer.PrintBoardForGamer();
     }
 } while (gameState == GameState.GameContinues);
 

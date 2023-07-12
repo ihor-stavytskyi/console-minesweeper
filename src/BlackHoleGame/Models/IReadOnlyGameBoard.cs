@@ -1,7 +1,7 @@
-// The interface is needed for the user input/output functionality and for the board printing.
-public interface IGame
+public interface IReadOnlyGameBoard
 {
     int BoardSize { get; }
+    int HolesCount { get; }
     int OpenCellsCount { get; }
     bool IsInsideBoard(Point point);
     IReadOnlyCell GetReadOnlyCell(Point point);
