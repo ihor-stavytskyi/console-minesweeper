@@ -1,5 +1,5 @@
-# Black Hole Game
-This is a console version of the Black Hole game, which is an analog of the Minesweeper game. Please note it is a fully functional game except for the flagging functionality. You will find the instructions on how to play when you run the console application.
+# Minesweeper Game
+This is a console version of the Minesweeper game. Please note it is a fully functional game. You will find the instructions on how to play when you run the console application.
 
 ## How to run?
 You can run this application either by having `.NET SDK 7.0` installed locally or using Docker.
@@ -9,18 +9,18 @@ You should have Docker installed on your machine.
 First, navigate to the folder with the application project:
 
 ```sh
-cd src/BlackHoleGame
+cd src/MinesweeperGame
 ```
 
 Then, build a Docker image:
 
 ```
-docker build -t black-hole-game-image -f Dockerfile .
+docker build -t minesweeper-game-image -f Dockerfile .
 ```
 
 After the Docker image is built, you can run a Docker container:
 ```
-docker run -it --rm black-hole-game-image
+docker run -it --rm minesweeper-game-image
 ```
 
 ### .NET
@@ -29,7 +29,7 @@ To run the application locally without Docker, you should have `.NET SDK 7.0` in
 After you downloaded and installed `.NET SDK 7.0`, navigate to the folder with the application project:
 
 ```sh
-cd src/BlackHoleGame
+cd src/MinesweeperGame
 ```
 
 Then, build the project:
@@ -48,7 +48,7 @@ To run the tests, you should have `.NET SDK 7.0` installed. You can find it [her
 After you have `.NET SDK 7.0` installed, navigate to the folder with the unit tests:
 
 ```sh
-cd src/BlackHoleGameTests
+cd src/MinesweeperGameTests
 ```
 
 Then, build the unit test project:

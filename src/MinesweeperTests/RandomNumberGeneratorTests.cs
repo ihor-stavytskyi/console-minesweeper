@@ -1,6 +1,6 @@
 using FluentAssertions;
 
-namespace BlackHoleGameTests;
+namespace MinesweeperGameTests;
 
 public class RandomNumberGeneratorTests
 {
