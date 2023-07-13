@@ -29,17 +29,23 @@ public class Game
 
         if (clickedCell.IsMine)
         {
-            return HandleClickIntoMine(clickedPoint);
+            HandleClickIntoMine(clickedPoint);
         }
 
         else if (clickedCell.IsOpenAndClickable)
         {
-            return HandleClickIntoOpenAndClickableCell(clickedPoint);
+            HandleClickIntoOpenAndClickableCell(clickedPoint);
         }
-        
-        MarkCellsAsOpen(clickedPoint);
+        else
+        {
+            MarkCellsAsOpen(clickedPoint);
+        }
 
-        return HasUserWon() ? GameState.UserWon : GameState.GameContinues;
+        return _board.IsMineOpen
+            ? GameState.UserLost
+            : HasUserWon() 
+                ? GameState.UserWon 
+                : GameState.GameContinues;
     }
 
     public void Flag(Point clickedPoint)
@@ -67,7 +73,7 @@ public class Game
         }
     }
 
-    private GameState HandleClickIntoOpenAndClickableCell(Point clickedPoint)
+    private void HandleClickIntoOpenAndClickableCell(Point clickedPoint)
     {
         var neighbors = _board.GetNeighbors(clickedPoint);
         foreach (var neighborPoint in neighbors)
@@ -79,29 +85,25 @@ public class Game
                 {
                     MarkCellsAsOpen(neighborPoint);
                 }
-                else if (!neighbor.IsMine) // if user flagged empty cell
-                {
-                    return GameState.UserLost;
-                }
+                // else if (!neighbor.IsMine) // if user flagged empty cell
+                // {
+                //     return GameState.UserLost;
+                // }
             }
         }
-
-        return GameState.GameContinues;
     }
 
-    private GameState HandleClickIntoMine(Point clickedPoint)
+    private void HandleClickIntoMine(Point clickedPoint)
     {
         var clickedCell = _board.GetCell(clickedPoint);
         if (_board.OpenCellsCount == 0) // the user can not hit a mine on the first click, so move the mine to a free cell
         {
             _board.MoveMineToTheFirstFreeCell(clickedCell);
             MarkCellsAsOpen(clickedPoint);
-            return GameState.GameContinues;
         }
         else
         {
             _board.OpenCell(clickedCell);
-            return GameState.UserLost;
         }
     }
 

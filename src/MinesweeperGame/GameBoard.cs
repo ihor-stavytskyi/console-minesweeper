@@ -52,6 +52,8 @@ public class GameBoard : IMutableGameBoard
 
     public int OpenCellsCount { get; private set; }
 
+    public bool IsMineOpen { get; private set; }
+
     public bool IsInsideBoard(Point point)
     {
         return point.Row >= 0 && point.Row < BoardSize && point.Column >=0 && point.Column < BoardSize;
@@ -71,6 +73,10 @@ public class GameBoard : IMutableGameBoard
     {
         cell.IsOpen = true;
         OpenCellsCount++;
+        if (cell.IsMine)
+        {
+            IsMineOpen = true;
+        }
     }
 
     /* 
