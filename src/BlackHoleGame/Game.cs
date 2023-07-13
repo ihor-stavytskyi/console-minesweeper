@@ -27,9 +27,9 @@ public class Game
             return GameState.GameContinues;
         }
 
-        if (clickedCell.IsHole)
+        if (clickedCell.IsMine)
         {
-            return HandleClickIntoHole(clickedPoint);
+            return HandleClickIntoMine(clickedPoint);
         }
 
         else if (clickedCell.IsOpenAndClickable)
@@ -57,7 +57,7 @@ public class Game
 
         clickedCell.IsFlagged = !clickedCell.IsFlagged; // flag or unflag
         
-        // change adjacent flags count and IsBlue property for neighbors
+        // change adjacent flags count for the neighbors
         var flagsToAdd = clickedCell.IsFlagged ? 1 : -1;
         var neighbors = _board.GetNeighbors(clickedPoint);
         foreach (var neighborPoint in neighbors)
@@ -65,28 +65,6 @@ public class Game
             var neighbor = _board.GetCell(neighborPoint);
             neighbor.AdjacentFlagsCount += flagsToAdd; 
         }
-
-        /* Requirements for flagging:
-
-        [DONE] Modifications to Cell:
-        1. Introduce property AreAllHolesFlagged. This property should be set to true only if the cell itself is open 
-        and the number of flags in adjacent cells is greather than or equal to the AdjacentHolesCount.
-
-        [DONE] Actions for Flag():
-        1. If clicked cell is already open, then nothing happens
-        2. If clicked cell is closed, then it should be marked with flag.
-        3. If clicked cell is flagged, it should be unflagged.
-        4. When a new flag is set or removed, it should affect AreAllHolesFlagged of surrounding cells to the clicked one.
-
-        Modifications to Click():
-        1. If user clicked into a cell with AreAllHolesFlagged = true, 
-        the algorithm should open all the surrounding cells except flagged ones. 
-        BUT if user flagged a wrong cell (that does not contain a hole), user should lose the game immediately.
-              
-        [DONE] Modifications to presentation:
-        1. If a cell is flagged, it should display F
-        2. If AreAllHolesFlagged is true, cell should become BLUE.
-        */
     }
 
     private GameState HandleClickIntoOpenAndClickableCell(Point clickedPoint)
@@ -101,7 +79,7 @@ public class Game
                 {
                     MarkCellsAsOpen(neighborPoint);
                 }
-                else if (!neighbor.IsHole) // if user flagged empty cell
+                else if (!neighbor.IsMine) // if user flagged empty cell
                 {
                     return GameState.UserLost;
                 }
@@ -111,12 +89,12 @@ public class Game
         return GameState.GameContinues;
     }
 
-    private GameState HandleClickIntoHole(Point clickedPoint)
+    private GameState HandleClickIntoMine(Point clickedPoint)
     {
         var clickedCell = _board.GetCell(clickedPoint);
-        if (_board.OpenCellsCount == 0) // the user can not hit a hole on the first click, so move the hole to a free cell
+        if (_board.OpenCellsCount == 0) // the user can not hit a mine on the first click, so move the mine to a free cell
         {
-            _board.MoveHoleToTheFirstFreeCell(clickedCell);
+            _board.MoveMineToTheFirstFreeCell(clickedCell);
             MarkCellsAsOpen(clickedPoint);
             return GameState.GameContinues;
         }
@@ -128,10 +106,10 @@ public class Game
     }
 
     /* 
-    If a cell has zero adjacent holes, then the surrounding cells should be open as well. So it is a recursive procedure. 
+    If a cell has zero adjacent mines, then the surrounding cells should be open as well. So it is a recursive procedure. 
     
     I decided to make a test. I implemented the method with both options (recursion and using a queue), then wrote a unit test 
-    that creates a huge board of size 1000*1000 cells with a single hole, so the first click recursively opens (1000*1000 - 1) cells. 
+    that creates a huge board of size 1000*1000 cells with a single mine, so the first click recursively opens (1000*1000 - 1) cells. 
     The recursive method threw a Stack Overflow exception, which was expected, and the method with a queue did very well 
     and did not crash the application. Though for the small boards both methods work well, I decided to move on with the method that uses a queue. 
     The unit test is also available (see GameTests.EnormousBoardShouldNotCrashTheGame).
@@ -149,7 +127,7 @@ public class Game
             if (!cellToOpen.IsOpen)
             {
                 _board.OpenCell(cellToOpen);
-                if (cellToOpen.AdjacentHolesCount == 0) // if a cell has zero adjacent holes, then its surrounding cells should be open as well
+                if (cellToOpen.AdjacentMinesCount == 0) // if a cell has zero adjacent mines, then its surrounding cells should be open as well
                 {
                     var neighbors = _board.GetNeighbors(currentPoint);
                     foreach (var neighbor in neighbors)
@@ -161,9 +139,9 @@ public class Game
         }
     }
 
-    // The user wins the game when all cells except holes are open
+    // The user wins the game when all cells except mines are open
     private bool HasUserWon()
     {
-        return _board.OpenCellsCount == (_board.BoardSize * _board.BoardSize - _board.HolesCount);
+        return _board.OpenCellsCount == (_board.BoardSize * _board.BoardSize - _board.MinesCount);
     }
 }

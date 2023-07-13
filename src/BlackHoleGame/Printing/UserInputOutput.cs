@@ -12,15 +12,18 @@ public class UserInputOutput
 
     public void PrintInstructions()
     {
-        string message = "Welcome to the Black Hole game, the analog of the Minesweeper game. " +
-            "You have a board of N*N cells and K black holes randomly placed on the board. " + 
-            "Your goal is to open all the cells that are not holes. If you hit a hole, the game is over.\n" +
+        string message = "Welcome to the Console Minesweeper game. " +
+            "You have a board of N*N cells and K mines randomly placed on the board. " + 
+            "Your goal is to open all the cells that are not mines. If you hit a mine, the game is over.\n" +
             "The coordinates of cells start from 0 and end with N-1. The top left corner has coordinates (0, 0) and the bottom right corner is (N-1, N-1).\n" +
-            "Before the game is started, you have to enter the numbers N and K. Then, on each move, you should enter the coordinates of the cell you want to open separated by a space.\n" + 
+            "Before the game is started, you have to enter the numbers N and K. " + 
+            "Then, on each move, you should enter the coordinates of the cell you want to open separated by a space. For example: '3 4'. \n" + 
+            "To flag or unflag a cell, add 'f' after the coordinates. For example: '3 4 f'." +
             "How to understand the board?\n" +
             "'C' is a closed cell.\n" +
-            "'H' is a hole.\n" + 
-            "'#' is the number of adjacent holes. For example, if you see '2', this cell contains two holes in the surrounding cells.\n\n" +
+            "'M' is a mine.\n" + 
+            "'F' is a flag.\n" + 
+            "'#' is the number of adjacent mines. For example, if you see '2', this cell contains two mines in the surrounding cells.\n\n" +
             "For testing purposes, you can reveal the board on any move by entering 'r' instead of the cell coordinates.\n" + 
             "Enjoy playing the game and good luck!\n";
         Console.WriteLine(message);
@@ -51,17 +54,17 @@ public class UserInputOutput
         return boardSize;
     }
 
-    public int ReadHolesCountFromConsole(int boardSize)
+    public int ReadMinesCountFromConsole(int boardSize)
     {
-        var holesCount = 0;
+        var minesCount = 0;
         while (true)
         {
-            holesCount = ReadNumberFromConsole("Please enter the number of the black holes on the board: ");
-            if (holesCount < 1)
+            minesCount = ReadNumberFromConsole("Please enter the number of the mines on the board: ");
+            if (minesCount < 1)
             {
-                PrintError("At least one hole should be placed on the board.");
+                PrintError("At least one mine should be placed on the board.");
             }
-            else if (holesCount > boardSize * boardSize - _options.MinFreeCells)
+            else if (minesCount > boardSize * boardSize - _options.MinFreeCells)
             {
                 PrintError($"You should have at least {_options.MinFreeCells} free cells.");
             }
@@ -73,7 +76,7 @@ public class UserInputOutput
 
         Console.WriteLine();
 
-        return holesCount;
+        return minesCount;
     }
 
     public static (UserCommand Command, Point Point) ReadPointFromConsole(IReadOnlyGameBoard gameBoard)
@@ -122,7 +125,7 @@ public class UserInputOutput
     {
         var (message, color) = state == GameState.UserWon
             ? ("Congratulations! You have won the game.", ConsoleColor.Green)
-            : ("Unfortunately you have hit a black hole.", ConsoleColor.Red);
+            : ("Unfortunately you have hit a mine.", ConsoleColor.Red);
         PrintWithColor(message, color);
     }
 

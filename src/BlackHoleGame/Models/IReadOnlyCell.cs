@@ -2,8 +2,8 @@
 public interface IReadOnlyCell
 {
     bool IsOpen { get; }
-    bool IsHole { get; }
+    bool IsMine { get; }
     public bool IsFlagged { get; }
-    int AdjacentHolesCount { get; }
+    int AdjacentMinesCount { get; }
     public bool IsOpenAndClickable { get; }
 }

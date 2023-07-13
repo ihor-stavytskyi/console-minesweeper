@@ -8,5 +8,5 @@ public interface IMutableGameBoard : IReadOnlyGameBoard
     Cell GetCell(Point point);
     void OpenCell(Cell cell);
     IEnumerable<Point> GetNeighbors(Point point);
-    void MoveHoleToTheFirstFreeCell(Cell clickedCell);
+    void MoveMineToTheFirstFreeCell(Cell clickedCell);
 }

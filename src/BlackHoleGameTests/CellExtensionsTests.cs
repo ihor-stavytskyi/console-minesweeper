@@ -5,26 +5,26 @@ namespace BlackHoleGameTests;
 public class CellExtensionsTests
 {
     [Fact]
-    public void CellToStringForGamerShouldHandleHole()
+    public void CellToStringForGamerShouldHandleMine()
     {
         var cell = new Cell()
         {
             IsOpen = true,
-            IsHole = true,
-            AdjacentHolesCount = 0
+            IsMine = true,
+            AdjacentMinesCount = 0
         };
         var stringRepresentation = cell.CellToStringForGamer();
-        stringRepresentation.Should().Be("H");
+        stringRepresentation.Should().Be("M");
     }
 
     [Fact]
-    public void CellToStringForGamerShouldHandleEmptyCellAndReturnAdjacentHolesCount()
+    public void CellToStringForGamerShouldHandleEmptyCellAndReturnAdjacentMinesCount()
     {
         var cell = new Cell()
         {
             IsOpen = true,
-            IsHole = false,
-            AdjacentHolesCount = 2
+            IsMine = false,
+            AdjacentMinesCount = 2
         };
         var stringRepresentation = cell.CellToStringForGamer();
         stringRepresentation.Should().Be("2");
@@ -36,34 +36,47 @@ public class CellExtensionsTests
         var cell = new Cell()
         {
             IsOpen = false,
-            IsHole = false,
-            AdjacentHolesCount = 2
+            IsMine = false,
+            AdjacentMinesCount = 2
         };
         var stringRepresentation = cell.CellToStringForGamer();
         stringRepresentation.Should().Be("C");
     }
 
     [Fact]
-    public void RevealCellShouldShowTheHoleDespiteTheCellIsClosed()
+    public void CellToStringForGamerShouldHandleFlaggedCell()
     {
         var cell = new Cell()
         {
             IsOpen = false,
-            IsHole = true,
-            AdjacentHolesCount = 0
+            IsMine = true,
+            IsFlagged = true
         };
-        var stringRepresentation = cell.RevealCell();
-        stringRepresentation.Should().Be("H");
+        var stringRepresentation = cell.CellToStringForGamer();
+        stringRepresentation.Should().Be("F");
     }
 
     [Fact]
-    public void RevealCellShouldShowAdjacentHolesCountDespiteTheCellIsClosed()
+    public void RevealCellShouldShowTheMineDespiteTheCellIsClosed()
     {
         var cell = new Cell()
         {
             IsOpen = false,
-            IsHole = false,
-            AdjacentHolesCount = 3
+            IsMine = true,
+            AdjacentMinesCount = 0
+        };
+        var stringRepresentation = cell.RevealCell();
+        stringRepresentation.Should().Be("M");
+    }
+
+    [Fact]
+    public void RevealCellShouldShowAdjacentMinesCountDespiteTheCellIsClosed()
+    {
+        var cell = new Cell()
+        {
+            IsOpen = false,
+            IsMine = false,
+            AdjacentMinesCount = 3
         };
         var stringRepresentation = cell.RevealCell();
         stringRepresentation.Should().Be("3");
