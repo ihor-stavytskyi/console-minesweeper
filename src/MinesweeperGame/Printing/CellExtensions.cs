@@ -2,11 +2,11 @@ public static class CellExtensions
 {
     public static string RevealCell(this IReadOnlyCell cell)
     {
-        return cell.IsHole 
-            ? "H" // "H" for "Hole"
-            : cell.AdjacentHolesCount == 0 
+        return cell.IsMine 
+            ? "M" // "M" for "Mine"
+            : cell.AdjacentMinesCount == 0 
                 ? " " 
-                : cell.AdjacentHolesCount.ToString();
+                : cell.AdjacentMinesCount.ToString();
     }
 
     public static string CellToStringForGamer(this IReadOnlyCell cell)

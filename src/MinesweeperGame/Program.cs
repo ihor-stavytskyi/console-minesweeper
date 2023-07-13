@@ -1,11 +1,11 @@
 ﻿var userInputOutput = new UserInputOutput(new GameOptions());
 userInputOutput.PrintInstructions();
 var boardSize = userInputOutput.ReadBoardSizeFromConsole();
-var holesCount = userInputOutput.ReadHolesCountFromConsole(boardSize);
+var minesCount = userInputOutput.ReadMinesCountFromConsole(boardSize);
 
-var randomNumbers = RandomNumberGenerator.Sample(boardSize * boardSize, holesCount);
-var holeLocations = NumberToPointConverter.Convert(randomNumbers, boardSize);
-var gameBoard = new GameBoard(boardSize, holeLocations);
+var randomNumbers = RandomNumberGenerator.Sample(boardSize * boardSize, minesCount);
+var mineLocations = NumberToPointConverter.Convert(randomNumbers, boardSize);
+var gameBoard = new GameBoard(boardSize, mineLocations);
 var game = new Game(gameBoard);
 var printer = new BoardPrinter(new PrinterOptions(), gameBoard);
 printer.PrintBoardForGamer();

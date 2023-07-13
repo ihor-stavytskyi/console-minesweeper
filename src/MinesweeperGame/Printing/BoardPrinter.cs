@@ -107,8 +107,8 @@ public class BoardPrinter
         return cell.IsOpen || forceOpen
             ? cell.IsOpenAndClickable
                 ? _options.OpenClickableCellColor
-                : cell.IsHole 
-                    ? _options.HoleColor 
+                : cell.IsMine 
+                    ? _options.MineColor 
                     : _options.OpenCellColor 
             : cell.IsFlagged
                 ? _options.FlaggedCellColor

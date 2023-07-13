@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/BlackHoleGame/bin/Debug/net7.0/BlackHoleGame.dll",
+            "program": "${workspaceFolder}/src/MinesweeperGame/bin/Debug/net7.0/MinesweeperGame.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/BlackHoleGame",
+            "cwd": "${workspaceFolder}/src/MinesweeperGame",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "integratedTerminal",
             "stopAtEntry": false
