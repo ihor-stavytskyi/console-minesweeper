@@ -137,6 +137,6 @@ public class Game
     // The user wins the game when all cells except mines are open
     private bool HasUserWon()
     {
-        return _board.OpenCellsCount == (_board.BoardSize * _board.BoardSize - _board.MinesCount);
+        return _board.OpenCellsCount == _board.TotalCellsToOpen;
     }
 }

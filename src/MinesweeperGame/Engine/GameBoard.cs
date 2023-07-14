@@ -50,6 +50,8 @@ public class GameBoard : IMutableGameBoard
 
     public int MinesCount { get; }
 
+    public int TotalCellsToOpen => BoardSize * BoardSize - MinesCount;
+
     public int OpenCellsCount { get; private set; }
 
     public bool IsMineOpen { get; private set; }

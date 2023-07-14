@@ -47,7 +47,7 @@ public class BoardPrinter
         Console.Write("You have opened ");
         PrintWithColor(_gameBoard.OpenCellsCount.ToString(), ConsoleColor.Green);
         Console.Write(" cells out of ");
-        PrintWithColor((_gameBoard.BoardSize * _gameBoard.BoardSize).ToString(), ConsoleColor.Green);
+        PrintWithColor(_gameBoard.TotalCellsToOpen.ToString(), ConsoleColor.Green);
         Console.WriteLine();
     }
 
