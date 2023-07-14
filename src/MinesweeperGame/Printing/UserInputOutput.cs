@@ -2,9 +2,6 @@ public class UserInputOutput
 {
     private readonly GameOptions _options;
 
-    // The special hard-coded point that is handled as a command to reveal the board
-    public static readonly Point RevealBoardCommand = new Point(-1, -1);
-
     public UserInputOutput(GameOptions options)
     {
         _options = options;
@@ -88,7 +85,7 @@ public class UserInputOutput
             var rawInput = Console.ReadLine()!;
             if (rawInput == "r") // "r" for "reveal"
             {
-                result = (UserCommand.RevealBoard, RevealBoardCommand);
+                result = (UserCommand.RevealBoard, new Point(-1, -1));
                 break;
             }
             var values = rawInput.Trim().Split(' ');
