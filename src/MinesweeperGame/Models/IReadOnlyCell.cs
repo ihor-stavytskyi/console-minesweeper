@@ -5,5 +5,6 @@ public interface IReadOnlyCell
     bool IsMine { get; }
     public bool IsFlagged { get; }
     int AdjacentMinesCount { get; }
+    int AdjacentFlagsCount { get; }
     public bool IsOpenAndClickable { get; }
 }

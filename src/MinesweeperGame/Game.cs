@@ -79,16 +79,9 @@ public class Game
         foreach (var neighborPoint in neighbors)
         {
             var neighbor = _board.GetCell(neighborPoint);
-            if (!neighbor.IsOpen)
+            if (!neighbor.IsOpen && !neighbor.IsFlagged)
             {
-                if (!neighbor.IsFlagged)
-                {
-                    MarkCellsAsOpen(neighborPoint);
-                }
-                // else if (!neighbor.IsMine) // if user flagged empty cell
-                // {
-                //     return GameState.UserLost;
-                // }
+                MarkCellsAsOpen(neighborPoint);
             }
         }
     }
@@ -126,10 +119,10 @@ public class Game
             var currentPoint = queue.Dequeue();
             var cellToOpen = _board.GetCell(currentPoint);
 
-            if (!cellToOpen.IsOpen)
+            if (!cellToOpen.IsOpen && !cellToOpen.IsFlagged)
             {
                 _board.OpenCell(cellToOpen);
-                if (cellToOpen.AdjacentMinesCount == 0) // if a cell has zero adjacent mines, then its surrounding cells should be open as well
+                if (!cellToOpen.IsMine && cellToOpen.AdjacentMinesCount == 0) // if a cell has zero adjacent mines, then its surrounding cells should be open as well
                 {
                     var neighbors = _board.GetNeighbors(currentPoint);
                     foreach (var neighbor in neighbors)
