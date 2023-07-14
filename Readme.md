@@ -60,10 +60,3 @@ Then, run the tests:
 ```
 dotnet test
 ```
-
-## Test coverage report
-To see the test coverage report, navigate to the folder with the report:
-```sh
-cd src/test-coverage-report
-```
-Then, open the `index.html` in your browser.
